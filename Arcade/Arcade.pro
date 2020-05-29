@@ -1,5 +1,5 @@
 TEMPLATE = app
-CONFIG += console c++11
+CONFIG += console c++17
 CONFIG -= app_bundle
 CONFIG -= qt
 
@@ -13,4 +13,10 @@ CONFIG(debug, debug|release){
 }
 
 SOURCES += \
-        main.cpp
+        gamemap.cpp \
+        main.cpp \
+        maingame.cpp
+
+HEADERS += \
+    gamemap.h \
+    maingame.h
