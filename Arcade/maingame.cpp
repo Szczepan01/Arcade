@@ -8,6 +8,9 @@ MainGame::MainGame()
     this->ptr_window->setFramerateLimit(60);
 
     this->map = std::make_shared<GameMap>("Mapa.png");
+    this->hero = std::make_shared<Hero>(std::string("Riven.png"),
+                                        sf::Vector2f(2.0, 2.0),
+                                        sf::Vector2f(70, 70));
 }
 
 void MainGame::run()
@@ -16,8 +19,9 @@ void MainGame::run()
     while(ptr_window->isOpen())
     {
         process_events();
-        draw_map();
-        ptr_window->display();
+        auto current_view = map->get_view(hero->get_position());
+
+        render();
     }
 }
 
@@ -33,9 +37,11 @@ void MainGame::process_events()
     }
 }
 
-void MainGame::draw_map()
+void MainGame::render()
 {
-
-
-
+    ptr_window->clear(sf::Color::Black);
+    map->draw(ptr_window);
+    hero->draw(ptr_window);
+    ptr_window->display();
 }
+

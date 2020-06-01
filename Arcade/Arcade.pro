@@ -14,9 +14,11 @@ CONFIG(debug, debug|release){
 
 SOURCES += \
         gamemap.cpp \
+        hero.cpp \
         main.cpp \
         maingame.cpp
 
 HEADERS += \
     gamemap.h \
+    hero.h \
     maingame.h
