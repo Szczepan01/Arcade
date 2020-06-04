@@ -11,11 +11,13 @@ public:
     GameMap(const std::string filename);
 
     void draw(std::shared_ptr<sf::RenderWindow> window);
+
     sf::View get_view(sf::Vector2f hero_position);
 
 private:
     sf::Texture texture;
     sf::Sprite mapa;
+    sf::View view();
 };
 
 

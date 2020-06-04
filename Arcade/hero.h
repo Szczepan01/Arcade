@@ -11,9 +11,12 @@ public:
     Hero(const std::string filename,sf::Vector2f scale,sf::Vector2f pos);
 
     void draw(std::shared_ptr<sf::RenderWindow> window);
+
     void set_speed(int vx, int vy){speed_x_ = vx; speed_y_ = vy;}
 
-    sf::Vector2f get_position() {return  position;}
+    sf::Vector2f get_position();
+    void set_position(const sf::Vector2f pos);
+    void move(const sf::Vector2f d);
 
 private:
     sf::Texture texture;
