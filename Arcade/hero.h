@@ -34,8 +34,6 @@ public:
 private:
     sf::Texture texture;
     sf::Sprite my_hero;
-
-    // sf::Vector2f position;  - usunięcie redundancji - positino wykorzystujemy z sprite'a
     sf::Vector2f speed;
 
     const static auto hero_h = 50;

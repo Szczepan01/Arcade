@@ -30,7 +30,7 @@ void MainGame::run()
         std::cout<<hero->get_speed().x<<std::endl;
         process_events();
 
-        // update_physics physics
+
         auto dt = clock.getElapsedTime();
         clock.restart();
 

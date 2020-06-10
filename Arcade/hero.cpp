@@ -48,24 +48,24 @@ void Hero::jump(std::shared_ptr<GameMap> map_ref)
 
     if(cur_h == surface_h)
     {
-        this->speed.y = -120; // tu określasz zasięg skoku
+        this->speed.y = -120; // zasięg skoku
     }
 
 }
 
 void Hero::update_physics(const float dt, std::shared_ptr<GameMap> map_ref)
 {
-    // zmiana taka, że potrzebna tu bedzie referencja do samej mapy, żeby wyłapać ograniczenia ruchu
+
     this->process_horizontal(dt, map_ref);
     this->process_vertical(dt, map_ref);
 }
 
 void Hero::process_horizontal(const float dt, std::shared_ptr<GameMap> map_ref)
 {
-    this->move(sf::Vector2f(speed.x * dt, 0)); // ruch w osi X	//
+    this->move(sf::Vector2f(speed.x * dt, 0));
     const auto current_y = my_hero.getPosition().y + hero_h;
 
-    // ograniczenia w poziomie, jeśli wysokość hero mniejsza niż pola docelowego, to cofnąć bohatera
+
     auto pos = my_hero.getPosition();
     auto cur_h = 0.0;
     if (speed.x >= 0){
@@ -85,17 +85,17 @@ void Hero::process_vertical(const float dt, std::shared_ptr<GameMap> map_ref)
     this->move(sf::Vector2f(0, speed.y * dt));
     auto pos = my_hero.getPosition();
 
-    // process gravity, cofnij jeśli przekroczy granicę w pionie:
+
     auto max_height = map_ref->check_height(pos.x, pos.x + hero_w);
     if (pos.y+hero_h > max_height)
     {
         my_hero.setPosition(pos.x, max_height-hero_h);
     }
 
-    // update prędkości, trzeba tu przekazać jakoś gravity speed - do przegadania
 
-    auto gravity = 60; // to trzeba zdefiniować jako pewnie środowisko
-    auto dg = 100; // tu określasz prędkość opadania bohatera
+
+    auto gravity = 60;
+    auto dg = 100;
     if (this->speed.y < gravity)
     {
         this->speed.y+= dg * dt;
