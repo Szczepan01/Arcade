@@ -1,23 +1,36 @@
 #ifndef GAMEMAP_H
 #define GAMEMAP_H
-#include "maingame.h"
+
 #include "SFML/Graphics.hpp"
 
-class GameMap
+#include <memory>
+
+
+
+
+struct Plat
+{
+    float x1, x2, h;
+};
+
+class GameMap:public sf::RectangleShape
 {
 public:
     GameMap();
 
     GameMap(const std::string filename);
 
-    void draw(std::shared_ptr<sf::RenderWindow> window);
+    void draw_(std::shared_ptr<sf::RenderWindow> window);
 
     sf::View get_view(sf::Vector2f hero_position);
 
+    float check_height(float x_min,float x_max);
+    float check_height(float x);
+
 private:
     sf::Texture texture;
-    sf::Sprite mapa;
-    sf::View view();
+    sf::Sprite map_sprite;
+    std::vector<Plat>plat;
 };
 
 

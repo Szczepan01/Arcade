@@ -5,7 +5,7 @@
 #include <memory>
 #include "gamemap.h"
 #include "hero.h"
-
+#include <memory>
 #include <iostream>
 
 class GameMap;
@@ -27,8 +27,12 @@ private:
 
     void process_events();
     void render();
-    // void draw_objects();
-    // void update_physics();
+
+    sf::Clock clock;
+    sf::Time time;
+
+    float speed_default_val_x = 120;
+    float gravity_speed = 60;
 };
 
 

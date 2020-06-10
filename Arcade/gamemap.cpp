@@ -1,24 +1,70 @@
 #include "gamemap.h"
 #include <iostream>
+
 using namespace sf;
+
 GameMap::GameMap()
 {
     this->texture.loadFromFile("Textury/Mapa.png");
-    mapa.setTexture(texture);
+    map_sprite.setTexture(texture);
 }
 
 GameMap::GameMap(const std::string filename)
 {
     this->texture.loadFromFile("Textury/" + filename);
-    mapa.setTexture(texture);
+    map_sprite.setTexture(texture);
+
+    plat = std::vector<Plat> // plat tutaj, wczesniej to był globalnie w pliku, przez co nie bylo do tego dostępu, domknąłem przedziały prawostronnie
+    {
+        {0,282,115},
+        {282,428,144},
+        {428,623,65},
+        {623,658,95},
+        {658,694,119},
+        {694,1155,144},
+        {1155,1205,122},
+        {1205,1351,144},
+        {1351,1379,62},
+        {1379,1938,144},
+        {1938,1976,123},
+        {1976,2300,144}
+    };
 }
 
-void GameMap::draw(std::shared_ptr<sf::RenderWindow> window)
+void GameMap::draw_(std::shared_ptr<sf::RenderWindow> window)
 {
-    window->draw(mapa);
+    window->draw(map_sprite);
 }
 
-sf::View GameMap::get_view(sf::Vector2f hero_position)
+
+float GameMap::check_height(float x_min,float x_max)
 {
-    return sf::View();
+    for(auto it = plat.begin(); it!=plat.end(); ++it)
+    {
+        if(x_min>it->x1 && x_max<=it->x2){
+            // Obiekt znajduje się w całości w danym segmencie
+            return it->h;
+        }
+        else if(it!=plat.end()-1) // tylko jeśli nie jest to ostatni element
+        {
+            if(x_min < it->x2 && x_max >= (it+1)->x1)
+            {
+                return std::min(it->h, (it+1)->h);
+            }
+        }
+    }
+    return 0;
 }
+
+float GameMap::check_height(float x)
+{
+    // Tu funkcja przeciążona dla pojedynczego punktu
+    for(auto it = plat.begin(); it!=plat.end(); ++it)
+    {
+        if(x>it->x1 && x<=it->x2){
+            return it->h;
+        }
+    }
+    return 0;
+}
+
