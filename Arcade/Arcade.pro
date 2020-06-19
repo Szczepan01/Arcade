@@ -13,12 +13,16 @@ CONFIG(debug, debug|release){
 }
 
 SOURCES += \
+        enemy.cpp \
         gamemap.cpp \
         hero.cpp \
         main.cpp \
-        maingame.cpp
+        maingame.cpp \
+        physics.cpp
 
 HEADERS += \
+    enemy.h \
     gamemap.h \
     hero.h \
-    maingame.h
+    maingame.h \
+    physics.h
