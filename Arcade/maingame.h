@@ -7,12 +7,15 @@
 #include "hero.h"
 #include "enemy.h"
 #include "physics.h"
+#include "bullet.h"
 #include <memory>
 #include <iostream>
 
 class GameMap;
 class Hero;
 class Enemy;
+class Bullet;
+class Hero_HP;
 
 class MainGame
 {
@@ -30,12 +33,17 @@ private:
     std::shared_ptr<Hero> hero;
     std::shared_ptr<Enemy> enemy;
     std::vector<Enemy*> enemies;
+    std::vector<Bullet*> bullet;
 
     std::vector<Enemy*>::iterator it;
+    std::vector<Bullet*>::iterator b_it;
 
     void process_events();
     void render();
     void is_collision();
+    void shot();
+    void shot_collision();
+    void is_win();
 
     sf::Clock clock;
     sf::Time time;

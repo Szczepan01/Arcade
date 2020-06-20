@@ -13,8 +13,7 @@ void physics::update_physics(const float dt, std::shared_ptr<GameMap> map_ref)
 
 void physics::process_horizontal(const float dt, std::shared_ptr<GameMap> map_ref)
 {
-    this->move(sf::Vector2f(speed.x * dt, 0)); // ruch w osi X	//
-    const auto current_y = sprite.getPosition().y + ob_h;
+    this->move(sf::Vector2f(speed.x * dt, 0));
 
     auto pos = sprite.getPosition();
     auto cur_h = 0.0;
@@ -67,8 +66,3 @@ void physics::jump(std::shared_ptr<GameMap> map_ref)
 
 }
 
-/*void physics::draw(sf::RenderTarget &target, sf::RenderStates states)
-{
-    states.transform *= sprite.getTransform();
-    target.draw(sprite,states);
-}*/

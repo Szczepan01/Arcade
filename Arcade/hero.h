@@ -20,17 +20,19 @@ public:
 
     void draw(std::shared_ptr<sf::RenderWindow> window);
 
-    sf::Vector2f get_position();
-    void set_position(const sf::Vector2f pos);
+    sf::Vector2f hero_get_position();
+    sf::Vector2f HP_get_position();
+
+    void update_physics_hp(const float dt);
+    void hp_horizontal(const float dt);
+    void hp_texture(int hero_HP);
 
     int hero_HP = 3;
 
 private:
-    sf::Texture texture;
-
-
-
-    // sf::Vector2f position;  - usunięcie redundancji - positino wykorzystujemy z sprite'a
+    sf::Texture texture, t1, t2, t3;
+    sf::Sprite hp;
+    sf::Vector2f hpSpeed;
 };
 
 #endif // HERO_H

@@ -18,14 +18,16 @@ MainGame::MainGame()
                                         sf::Vector2f(2.0, 2.0),
                                         sf::Vector2f(70, 65));
 
-    /*this->enemy = std::make_shared<Enemy>(std::string("Mag.png"),
-                                           sf::Vector2f(2.0,2.0)
-                                           );*/
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(380,0)));
+    enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(490,0)));
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(800,0)));
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(1010,0)));
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(1240,0)));
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(1510,0)));
+    enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(1640,0)));
+    enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(2000,0)));
+    enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(2200,0)));
+    enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(3000,0)));
 
 }
 
@@ -36,6 +38,7 @@ void MainGame::run()
 
     this->hero->set_vx(0);
     this->hero->set_vy(gravity_speed);
+
     for(auto en : enemies)
     {
         en->set_vy(gravity_speed);
@@ -43,24 +46,34 @@ void MainGame::run()
 
     while(ptr_window->isOpen())
     {
-        //std::cout<<hero->get_speed().x<<std::endl;
+
         process_events();
 
-        // update_physics physics
+
         auto dt = clock.getElapsedTime();
         clock.restart();
 
         this->hero->update_physics(dt.asSeconds(), this->map);
-         //this->enemy->update_physics(dt.asSeconds(), this->map);
+        this->hero->update_physics_hp(dt.asSeconds());
+
+
 
         for(auto en : enemies)
         {
             en->update_physics(dt.asSeconds(), this->map);
         }
-        main_view.setCenter(this->hero->get_position().x, 90);
+
+        for(auto bu : bullet)
+        {
+            bu->update(dt.asSeconds());
+        }
+        shot();
+        shot_collision();
+        main_view.setCenter(this->hero->hero_get_position().x, 90);
         this->ptr_window->setView(main_view);
         render();
         is_collision();
+        is_win();
         if(!ptr_window->isOpen())
         {
             break;
@@ -84,17 +97,24 @@ void MainGame::process_events()
         if(Keyboard::isKeyPressed(Keyboard::D))
         {
             this->hero->set_vx(speed_default_val_x);
+
         }
         else if(Keyboard::isKeyPressed(Keyboard::A))
         {
             this->hero->set_vx(-speed_default_val_x);
+
         }
-        else if(event.type == Event::KeyReleased)
+        if(event.type == Event::KeyReleased)
         {
             if(event.key.code == Keyboard::D || event.key.code == Keyboard::A)
             {
                 this->hero->set_vx(0);
+
             }
+        }
+        if(Mouse::isButtonPressed(Mouse::Left))
+        {
+            bullet.emplace_back(new Bullet(hero->sprite.getPosition()));
         }
 
         if(Keyboard::isKeyPressed(Keyboard::Space))
@@ -114,6 +134,10 @@ void MainGame::render()
     {
         ptr_window->draw(en->sprite);
     }
+    for(auto bu : bullet)
+    {
+        ptr_window->draw(*bu);
+    }
     ptr_window->display();
 }
 
@@ -126,16 +150,60 @@ void MainGame::is_collision()
         {
             it = enemies.erase(it);
             hero->hero_HP = hero->hero_HP -1;
-            std::cout<<hero->hero_HP<<std::endl;
             if(hero->hero_HP == 0)
             {
-                std::cout<<"KONIEC GRY"<<std::endl;
+                std::cout<<"GAME OVER"<<std::endl;
                 ptr_window->close();
             }
+            this->hero->hp_texture(hero->hero_HP);
         }
         else {
             ++it;
         }
+    }
+}
+
+void MainGame::shot()
+{
+    for ( b_it = bullet.begin(); b_it != bullet.end(); )
+    {
+        if((*b_it)->limits())
+        {
+            b_it = bullet.erase(b_it);
+        }
+        else {
+            ++b_it;
+        }
+    }
+
+}
+
+void MainGame::shot_collision()
+{
+    for ( it = enemies.begin(); it != enemies.end(); )
+    {
+        for( b_it = bullet.begin(); b_it != bullet.end();)
+        {
+            if((*b_it)->getGlobalBounds().intersects((*it)->sprite.getGlobalBounds()))
+            {
+                it = enemies.erase(it);
+                b_it = bullet.erase(b_it);
+            }
+            else {
+                ++b_it;
+            }
+        }
+        ++it;
+    }
+}
+
+void MainGame::is_win()
+{
+    if(enemies.size() <= 1)
+    {
+        std::cout<<"!!!     YOU WIN     !!!"<<std::endl;
+        std::cout<<"!!! CONGRATULATIONS !!!"<<std::endl;
+        ptr_window->close();
     }
 }
 

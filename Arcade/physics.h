@@ -29,11 +29,10 @@ public:
 
 private:
 
-    void process_horizontal(const float dt, std::shared_ptr<GameMap> map_ref);
-    void process_vertical(const float dt, std::shared_ptr<GameMap> map_ref);
-
     sf::Vector2f speed;
 
+    void process_horizontal(const float dt, std::shared_ptr<GameMap> map_ref);
+    void process_vertical(const float dt, std::shared_ptr<GameMap> map_ref);
 
     const static auto ob_h = 50;
     const static auto ob_w = 40;
