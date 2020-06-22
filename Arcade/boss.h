@@ -21,8 +21,6 @@ public:
 
     virtual void update_physics(const float dt, std::shared_ptr<GameMap> map_ref);
 
-    int boss_hp = 20;
-
 private:
     sf::Texture texture;
 };

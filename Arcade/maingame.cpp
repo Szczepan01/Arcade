@@ -17,6 +17,9 @@ MainGame::MainGame()
     this->hero = std::make_shared<Hero>(std::string("Miss.png"),
                                         sf::Vector2f(2.0, 2.0),
                                         sf::Vector2f(70, 65));
+    this->hero->set_animation(0);
+
+
     this->boss = std::make_shared<Boss>(sf::Vector2f(2.0, 2.0),
                                         sf::Vector2f(2250,0));
 
@@ -62,6 +65,9 @@ void MainGame::run()
         this->hero->update_physics(dt.asSeconds(), this->map);
         this->boss->update_physics(dt.asSeconds(), this->map);
         this->hero->update_physics_hp(dt.asSeconds());
+        this->hero->update_physics_boss_hp(dt.asSeconds());
+
+        this->hero->update_animation();
 
         for(auto en : enemies)
         {
@@ -114,26 +120,66 @@ void MainGame::process_events()
             ptr_window->close();
         }
 
+
+        if(event.type == Event::KeyPressed)
+        {
+            if(event.key.code == Keyboard::Enter)
+            {
+                this->hero->set_animation(3);
+                if(bullet.size() <= 1)
+                {
+                bullet.emplace_back(new Bullet(hero->sprite.getPosition()));
+                audio.shot();
+                }
+
+            }
+        }
+
         if(Keyboard::isKeyPressed(Keyboard::D))
         {
             this->hero->set_vx(speed_default_val_x);
+            this->hero->set_animation(1);
 
         }
         else if(Keyboard::isKeyPressed(Keyboard::A))
         {
             this->hero->set_vx(-speed_default_val_x);
+            this->hero->set_animation(2);
+        }
+
+        if((Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::A)) && Keyboard::isKeyPressed(Keyboard::Enter))
+        {
+            this->hero->set_animation(4);
+            if(bullet.size() <= 1)
+            {
+            bullet.emplace_back(new Bullet(hero->sprite.getPosition()));
+            audio.shot();
+            }
 
         }
+
         if(event.type == Event::KeyReleased)
         {
             if(event.key.code == Keyboard::D || event.key.code == Keyboard::A)
             {
                 this->hero->set_vx(0);
+                this->hero->set_animation(0);
             }
             if(event.key.code == Keyboard::Enter)
             {
-                bullet.emplace_back(new Bullet(hero->sprite.getPosition()));
-                audio.shot();
+                if(Keyboard::isKeyPressed(Keyboard::D))
+                {
+                    this->hero->set_animation(1);
+                }
+                else if(Keyboard::isKeyPressed(Keyboard::A))
+                {
+                    this->hero->set_animation(2);
+                }
+                else
+                {
+                    this->hero->set_animation(0);
+                }
+
             }
         }
 
@@ -232,11 +278,12 @@ void MainGame::shot_collision()
         if((*b_it)->getGlobalBounds().intersects(boss->sprite.getGlobalBounds()))
         {
             b_it = bullet.erase(b_it);
-            boss->boss_hp = boss->boss_hp - 1;
-            if(boss->boss_hp <= 0)
+            hero->boss_hp = hero->boss_hp - 1;
+            if(hero->boss_hp <= 0)
             {
                 is_win();
             }
+            this->hero->b_hp_texture(hero->boss_hp);
         }
         else
         {
@@ -327,7 +374,6 @@ void MainGame::is_win()
     std::cout<<"!!! CONGRATULATIONS !!!"<<std::endl;
     ptr_window->close();
 }
-
 
 
 
