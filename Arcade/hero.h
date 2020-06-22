@@ -27,6 +27,8 @@ public:
     void hp_horizontal(const float dt);
     void hp_texture(int hero_HP);
 
+    virtual void update_physics(const float dt, std::shared_ptr<GameMap> map_ref);
+
     int hero_HP = 3;
 
 private:

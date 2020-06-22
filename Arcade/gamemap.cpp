@@ -14,7 +14,7 @@ GameMap::GameMap(const std::string filename)
     this->texture.loadFromFile("Textury/" + filename);
     map_sprite.setTexture(texture);
 
-    plat = std::vector<Plat>
+    plat = std::vector<Plat> // plat tutaj, wczesniej to był globalnie w pliku, przez co nie bylo do tego dostępu, domknąłem przedziały prawostronnie
     {
         {0,282,115},
         {282,428,144},
@@ -42,10 +42,10 @@ float GameMap::check_height(float x_min,float x_max)
     for(auto it = plat.begin(); it!=plat.end(); ++it)
     {
         if(x_min>it->x1 && x_max<=it->x2){
-
+            // Obiekt znajduje się w całości w danym segmencie
             return it->h;
         }
-        else if(it!=plat.end()-1)
+        else if(it!=plat.end()-1) // tylko jeśli nie jest to ostatni element
         {
             if(x_min < it->x2 && x_max >= (it+1)->x1)
             {
@@ -58,6 +58,7 @@ float GameMap::check_height(float x_min,float x_max)
 
 float GameMap::check_height(float x)
 {
+    // Tu funkcja przeciążona dla pojedynczego punktu
     for(auto it = plat.begin(); it!=plat.end(); ++it)
     {
         if(x>it->x1 && x<=it->x2){

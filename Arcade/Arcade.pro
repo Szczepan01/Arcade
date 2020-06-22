@@ -13,8 +13,12 @@ CONFIG(debug, debug|release){
 }
 
 SOURCES += \
+        audio.cpp \
+        boss.cpp \
+        bossbullet.cpp \
         bullet.cpp \
         enemy.cpp \
+        enemybullet.cpp \
         gamemap.cpp \
         hero.cpp \
         main.cpp \
@@ -22,8 +26,12 @@ SOURCES += \
         physics.cpp
 
 HEADERS += \
+    audio.h \
+    boss.h \
+    bossbullet.h \
     bullet.h \
     enemy.h \
+    enemybullet.h \
     gamemap.h \
     hero.h \
     maingame.h \

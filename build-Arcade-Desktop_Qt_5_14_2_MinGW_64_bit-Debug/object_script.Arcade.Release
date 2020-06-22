@@ -1,0 +1,11 @@
+release/audio.o
+release/boss.o
+release/bossbullet.o
+release/bullet.o
+release/enemy.o
+release/enemybullet.o
+release/gamemap.o
+release/hero.o
+release/main.o
+release/maingame.o
+release/physics.o

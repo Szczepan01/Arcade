@@ -1,0 +1,11 @@
+debug/audio.o
+debug/boss.o
+debug/bossbullet.o
+debug/bullet.o
+debug/enemy.o
+debug/enemybullet.o
+debug/gamemap.o
+debug/hero.o
+debug/main.o
+debug/maingame.o
+debug/physics.o

@@ -60,14 +60,7 @@ void Hero::hp_horizontal(const float dt)
     this->move(sf::Vector2f(hpSpeed.x * dt, 0));
     auto pos_hp = hp.getPosition().x;
     auto pos_hero = sprite.getPosition().x;
-    if(pos_hp < pos_hero-250)
-    {
-        hp.move(sf::Vector2f(2, 0));
-    }
-    if(pos_hp > pos_hero-253)
-    {
-        hp.move(sf::Vector2f(-2,0));
-    }
+    hp.setPosition(pos_hero - 250,0);
 }
 
 void Hero::hp_texture(int hero_HP)
@@ -84,6 +77,12 @@ void Hero::hp_texture(int hero_HP)
     {
         this->hp.setTexture(t3);
     }
+}
+
+void Hero::update_physics(const float dt, std::shared_ptr<GameMap> map_ref)
+{
+    this->process_horizontal(dt, map_ref);
+    this->process_vertical(dt, map_ref);
 }
 
 

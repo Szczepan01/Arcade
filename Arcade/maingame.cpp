@@ -17,27 +17,33 @@ MainGame::MainGame()
     this->hero = std::make_shared<Hero>(std::string("Miss.png"),
                                         sf::Vector2f(2.0, 2.0),
                                         sf::Vector2f(70, 65));
+    this->boss = std::make_shared<Boss>(sf::Vector2f(2.0, 2.0),
+                                        sf::Vector2f(2250,0));
 
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(380,0)));
-    enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(490,0)));
+    enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(540,0)));
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(800,0)));
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(1010,0)));
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(1240,0)));
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(1510,0)));
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(1640,0)));
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(2000,0)));
-    enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(2200,0)));
     enemies.emplace_back(new Enemy(sf::Vector2f(2.0,2.0),sf::Vector2f(3000,0)));
 
+    enShotTime = 0;
+    bossShotTime = 0;
 }
 
 void MainGame::run()
 {
     sf::Clock clock;
-    std::srand(std::time(NULL));
 
+    audio.melody();
     this->hero->set_vx(0);
     this->hero->set_vy(gravity_speed);
+    this->boss->set_vx(0);
+    this->boss->set_vy(gravity_speed);
+
 
     for(auto en : enemies)
     {
@@ -54,10 +60,13 @@ void MainGame::run()
         clock.restart();
 
         this->hero->update_physics(dt.asSeconds(), this->map);
+        this->boss->update_physics(dt.asSeconds(), this->map);
         this->hero->update_physics_hp(dt.asSeconds());
 
-
-
+        for(auto en : enemies)
+        {
+            en->set_vx(dt);
+        }
         for(auto en : enemies)
         {
             en->update_physics(dt.asSeconds(), this->map);
@@ -67,13 +76,24 @@ void MainGame::run()
         {
             bu->update(dt.asSeconds());
         }
+
+        for(auto bu : enbu)
+        {
+            bu->update(dt.asSeconds());
+        }
+        for(auto b : bb)
+        {
+            b->update(dt.asSeconds());
+        }
+
         shot();
         shot_collision();
+        enemy_shot();
+        enemy_shot_collision();
         main_view.setCenter(this->hero->hero_get_position().x, 90);
         this->ptr_window->setView(main_view);
         render();
         is_collision();
-        is_win();
         if(!ptr_window->isOpen())
         {
             break;
@@ -109,12 +129,12 @@ void MainGame::process_events()
             if(event.key.code == Keyboard::D || event.key.code == Keyboard::A)
             {
                 this->hero->set_vx(0);
-
             }
-        }
-        if(Mouse::isButtonPressed(Mouse::Left))
-        {
-            bullet.emplace_back(new Bullet(hero->sprite.getPosition()));
+            if(event.key.code == Keyboard::Enter)
+            {
+                bullet.emplace_back(new Bullet(hero->sprite.getPosition()));
+                audio.shot();
+            }
         }
 
         if(Keyboard::isKeyPressed(Keyboard::Space))
@@ -127,9 +147,10 @@ void MainGame::process_events()
 
 void MainGame::render()
 {
-    ptr_window->clear(sf::Color::Black);
+    ptr_window->clear(sf::Color(29, 204,231));
     map->draw_(ptr_window);
     hero->draw(ptr_window);
+    boss->draw(ptr_window);
     for(auto en : enemies)
     {
         ptr_window->draw(en->sprite);
@@ -137,6 +158,14 @@ void MainGame::render()
     for(auto bu : bullet)
     {
         ptr_window->draw(*bu);
+    }
+    for(auto eb : enbu)
+    {
+        ptr_window->draw(*eb);
+    }
+    for(auto b : bb)
+    {
+        ptr_window->draw(*b);
     }
     ptr_window->display();
 }
@@ -161,6 +190,11 @@ void MainGame::is_collision()
             ++it;
         }
     }
+    if(hero->sprite.getGlobalBounds().intersects(boss->sprite.getGlobalBounds()))
+    {
+        std::cout<<"GAME OVER"<<std::endl;
+        ptr_window->close();
+    }
 }
 
 void MainGame::shot()
@@ -175,12 +209,11 @@ void MainGame::shot()
             ++b_it;
         }
     }
-
 }
 
 void MainGame::shot_collision()
 {
-    for ( it = enemies.begin(); it != enemies.end(); )
+    for ( it = enemies.begin(); it != enemies.end();++it)
     {
         for( b_it = bullet.begin(); b_it != bullet.end();)
         {
@@ -193,18 +226,108 @@ void MainGame::shot_collision()
                 ++b_it;
             }
         }
-        ++it;
+    }
+    for(b_it = bullet.begin(); b_it != bullet.end();)
+    {
+        if((*b_it)->getGlobalBounds().intersects(boss->sprite.getGlobalBounds()))
+        {
+            b_it = bullet.erase(b_it);
+            boss->boss_hp = boss->boss_hp - 1;
+            if(boss->boss_hp <= 0)
+            {
+                is_win();
+            }
+        }
+        else
+        {
+            ++b_it;
+        }
+    }
+}
+
+void MainGame::enemy_shot()
+{
+    for ( enbu_it = enbu.begin(); enbu_it != enbu.end(); )
+    {
+        if((*enbu_it)->limits())
+        {
+            enbu_it = enbu.erase(enbu_it);
+        }
+        else {
+            ++enbu_it;
+        }
+    }
+    if(enShotTime >100)
+    {
+        enShotTime = 0;
+        for( it = enemies.begin(); it != enemies.end();it++)
+        {
+            enbu.emplace_back(new EnemyBullet((*it)->sprite.getPosition()));
+            audio.enemy_shot();
+        }
+    }
+    this->enShotTime++;
+
+    for ( bb_it = bb.begin(); bb_it != bb.end(); )
+    {
+        if((*bb_it)->limits())
+        {
+            bb_it = bb.erase(bb_it);
+        }
+        else {
+            ++bb_it;
+        }
+    }
+    if(bossShotTime > 50)
+    {
+        bossShotTime = 0;
+        bb.emplace_back(new BossBullet(boss->sprite.getPosition()));
+        audio.enemy_shot();
+    }
+    this->bossShotTime++;
+}
+
+void MainGame::enemy_shot_collision()
+{
+    for(enbu_it = enbu.begin(); enbu_it != enbu.end();++enbu_it)
+    {
+        if((*enbu_it)->getGlobalBounds().intersects(hero->sprite.getGlobalBounds()))
+        {
+            enbu_it = enbu.erase(enbu_it);
+            hero->hero_HP = hero->hero_HP -1;
+            if(hero->hero_HP == 0)
+            {
+                std::cout<<"GAME OVER"<<std::endl;
+                ptr_window->close();
+            }
+            this->hero->hp_texture(hero->hero_HP);
+        }
+    }
+
+    for(bb_it = bb.begin(); bb_it != bb.end();++bb_it)
+    {
+        if((*bb_it)->getGlobalBounds().intersects(hero->sprite.getGlobalBounds()))
+        {
+            bb_it = bb.erase(bb_it);
+            hero->hero_HP = hero->hero_HP -1;
+            std::cout<<hero->hero_HP<<std::endl;
+            if(hero->hero_HP == 0)
+            {
+                std::cout<<"GAME OVER"<<std::endl;
+                ptr_window->close();
+            }
+            this->hero->hp_texture(hero->hero_HP);
+        }
     }
 }
 
 void MainGame::is_win()
 {
-    if(enemies.size() <= 1)
-    {
-        std::cout<<"!!!     YOU WIN     !!!"<<std::endl;
-        std::cout<<"!!! CONGRATULATIONS !!!"<<std::endl;
-        ptr_window->close();
-    }
+    std::cout<<"!!!     YOU WIN     !!!"<<std::endl;
+    std::cout<<"!!! CONGRATULATIONS !!!"<<std::endl;
+    ptr_window->close();
 }
+
+
 
 

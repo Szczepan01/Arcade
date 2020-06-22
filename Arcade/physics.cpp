@@ -5,12 +5,6 @@ physics::physics()
 
 }
 
-void physics::update_physics(const float dt, std::shared_ptr<GameMap> map_ref)
-{
-    this->process_horizontal(dt, map_ref);
-    this->process_vertical(dt, map_ref);
-}
-
 void physics::process_horizontal(const float dt, std::shared_ptr<GameMap> map_ref)
 {
     this->move(sf::Vector2f(speed.x * dt, 0));

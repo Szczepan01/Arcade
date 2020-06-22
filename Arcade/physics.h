@@ -23,17 +23,17 @@ public:
     void jump(std::shared_ptr<GameMap> map_ref);
     void draw(sf::RenderTarget &target, sf::RenderStates states);
 
-    void update_physics(const float dt, std::shared_ptr<GameMap> map_ref);
+    virtual void update_physics(const float dt, std::shared_ptr<GameMap> map_ref)=0;
 
     sf::Sprite sprite;
 
-private:
-
+protected:
     sf::Vector2f speed;
 
     void process_horizontal(const float dt, std::shared_ptr<GameMap> map_ref);
     void process_vertical(const float dt, std::shared_ptr<GameMap> map_ref);
 
+private:
     const static auto ob_h = 50;
     const static auto ob_w = 40;
 
